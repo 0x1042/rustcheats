@@ -29,10 +29,38 @@
   - [下载文件](#下载文件)
 - [`http server`](#http-server)
   - [`axum`](#axum)
+- [宏](#宏)
+  - [声明式宏 `declarative macros`](#声明式宏-declarative-macros)
+  - [过程宏 `procedural macros`](#过程宏-procedural-macros)
+    - [派生宏 `#[derive]`](#派生宏-derive)
+    - [类属性宏(`Attribute-like macro`)](#类属性宏attribute-like-macro)
+    - [类函数宏(`Function-like macro`)](#类函数宏function-like-macro)
 
 # 全局变量 
 
+- `lazy static`
+- `once cell`
+
 ## `lazy static`
+
+```rust
+
+pub fn init() -> reqwest::Client {
+    reqwest::Client::builder()
+        .pool_idle_timeout(Duration::from_secs(30))
+        .pool_max_idle_per_host(32)
+        .timeout(Duration::from_secs(1))
+        .proxy(Proxy::http("http://127.0.0.1:1087").unwrap())
+        .build()
+        .unwrap()
+}
+
+lazy_static::lazy_static! {
+    static ref CLIENT: reqwest::Client = http_cli::init();
+
+    static ref CACHE: ArcSwap<HashMap<String,String>> = ArcSwap::from_pointee(HashMap::new());
+}
+```
 
 ## `once cell`
 
@@ -41,6 +69,21 @@
 ## 标准库 
 
 ## `tokio` 
+
+```rust 
+pub async fn init() {
+    tokio::spawn(async move {
+        loop {
+            CACHE.store(std::sync::Arc::new(
+                real_get("https://gocn.vip/c/3lQ6GbD5ny/s/Gd7BTB/d/z63pjQHmo3").await,
+            ));
+            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+            let size = CACHE.load().len();
+            info!("timed run... cache size {}", size);
+        }
+    });
+}
+```
 
 # `json`
 
@@ -266,3 +309,15 @@ pub fn init() -> reqwest::Client {
 # `http server`
 
 ## `axum`
+
+# 宏 
+
+## 声明式宏 `declarative macros`
+
+## 过程宏 `procedural macros`
+
+### 派生宏 `#[derive]`
+
+### 类属性宏(`Attribute-like macro`)
+
+### 类函数宏(`Function-like macro`)
