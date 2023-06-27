@@ -17,26 +17,60 @@
     - [`read json file`](#read-json-file)
 - [`protobuf`](#protobuf)
   - [`marshal`](#marshal-1)
-  - [`thrift`](#thrift)
-- [`protobuf`](#protobuf-1)
-  - [`marshal`](#marshal-2)
   - [`unmarshal`](#unmarshal-1)
+- [`thrift`](#thrift)
+  - [`marshal`](#marshal-2)
+  - [`unmarshal`](#unmarshal-2)
 - [`http client`](#http-client)
   - [`长连接`](#长连接)
   - [`proxy`](#proxy)
   - [`超时控制`](#超时控制)
   - [`post`](#post)
   - [下载文件](#下载文件)
-- [`http server`](#http-server)
-  - [`axum`](#axum)
+- [常用数据结构](#常用数据结构)
+  - [`Vec`](#vec)
+  - [`Map`](#map)
+    - [`HashMap`](#hashmap)
+    - [`BTreeMap`](#btreemap)
+  - [`Set`](#set)
+    - [`HashSet`](#hashset)
+    - [`BTreeSet`](#btreeset)
+  - [`BinaryHeap`](#binaryheap)
+  - [`VecDeque`](#vecdeque)
+  - [`LinkedList`](#linkedlist)
+- [字符串](#字符串)
+- [泛型](#泛型)
+  - [`GAT`](#gat)
+- [`trait`](#trait)
+- [错误处理](#错误处理)
+  - [自定义错误](#自定义错误)
+  - [错误转换](#错误转换)
+- [异步](#异步)
+- [智能指针](#智能指针)
+- [内部可变性](#内部可变性)
 - [宏](#宏)
   - [声明式宏 `declarative macros`](#声明式宏-declarative-macros)
   - [过程宏 `procedural macros`](#过程宏-procedural-macros)
     - [派生宏 `#[derive]`](#派生宏-derive)
     - [类属性宏(`Attribute-like macro`)](#类属性宏attribute-like-macro)
     - [类函数宏(`Function-like macro`)](#类函数宏function-like-macro)
+- [闭包](#闭包)
+  - [`Fn(&self)`](#fnself)
+  - [`FnMut(&mut self)`](#fnmutmut-self)
+  - [`FnOnce(self)`](#fnonceself)
+- [迭代器 `Iterator`](#迭代器-iterator)
+- [类型转换](#类型转换)
+  - [`as`](#as)
+  - [`from`](#from)
+  - [`into`](#into)
+  - [`Deref`](#deref)
+- [`lifetime`](#lifetime)
+- [析构](#析构)
+- [`pin && unpin`](#pin--unpin)
+- [反射](#反射)
+- [`unsafe`](#unsafe)
 
-# 全局变量 
+# 全局变量
 
 - `lazy static`
 - `once cell`
@@ -46,13 +80,13 @@
 ```rust
 
 pub fn init() -> reqwest::Client {
-    reqwest::Client::builder()
-        .pool_idle_timeout(Duration::from_secs(30))
-        .pool_max_idle_per_host(32)
-        .timeout(Duration::from_secs(1))
-        .proxy(Proxy::http("http://127.0.0.1:1087").unwrap())
-        .build()
-        .unwrap()
+	reqwest::Client::builder()
+		.pool_idle_timeout(Duration::from_secs(30))
+		.pool_max_idle_per_host(32)
+		.timeout(Duration::from_secs(1))
+		.proxy(Proxy::http("http://127.0.0.1:1087").unwrap())
+		.build()
+		.unwrap()
 }
 
 lazy_static::lazy_static! {
@@ -64,24 +98,24 @@ lazy_static::lazy_static! {
 
 ## `once cell`
 
-# 定时任务 
+# 定时任务
 
-## 标准库 
+## 标准库
 
-## `tokio` 
+## `tokio`
 
 ```rust 
 pub async fn init() {
-    tokio::spawn(async move {
-        loop {
-            CACHE.store(std::sync::Arc::new(
-                real_get("https://gocn.vip/c/3lQ6GbD5ny/s/Gd7BTB/d/z63pjQHmo3").await,
-            ));
-            tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-            let size = CACHE.load().len();
-            info!("timed run... cache size {}", size);
-        }
-    });
+	tokio::spawn(async move {
+		loop {
+			CACHE.store(std::sync::Arc::new(
+				real_get("https://gocn.vip/c/3lQ6GbD5ny/s/Gd7BTB/d/z63pjQHmo3").await,
+			));
+			tokio::time::sleep(std::time::Duration::from_secs(5)).await;
+			let size = CACHE.load().len();
+			info!("timed run... cache size {}", size);
+		}
+	});
 }
 ```
 
@@ -92,8 +126,8 @@ pub async fn init() {
 // cargo add serde -F derive
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Animal {
-    pub name: String,
-    pub age: u32,
+	pub name: String,
+	pub age: u32,
 }
 ```
 
@@ -102,41 +136,42 @@ pub struct Animal {
 ### `struct to json`
 
 ```rust
-    #[traced_test]
-    #[test]
-    fn struct_to_json() {
-        let tom = Animal {
-            name: "tom".to_string(),
-            age: 20,
-        };
-        let jstr = serde_json::to_string(&tom).unwrap();
-        assert!(jstr.len() > 0);
-    }
+#[traced_test]
+#[test]
+fn struct_to_json() {
+	let tom = Animal {
+		name: "tom".to_string(),
+		age: 20,
+	};
+	let jstr = serde_json::to_string(&tom).unwrap();
+	assert!(jstr.len() > 0);
+}
 ```
+
 ### `map to json`
 
 ```rust
-    #[test]
-    #[traced_test]
-    fn map_to_json() {
-        let mut db = HashMap::new();
-        db.insert(
-            "tom",
-            Animal {
-                name: "tom".to_owned(),
-                age: 10,
-            },
-        );
-        db.insert(
-            "jerry",
-            Animal {
-                name: "jerry".to_owned(),
-                age: 12,
-            },
-        );
-        let jstr = serde_json::to_string(&db).unwrap();
-        assert!(jstr.len() > 0);
-    }
+#[test]
+#[traced_test]
+fn map_to_json() {
+	let mut db = HashMap::new();
+	db.insert(
+		"tom",
+		Animal {
+			name: "tom".to_owned(),
+			age: 10,
+		},
+	);
+	db.insert(
+		"jerry",
+		Animal {
+			name: "jerry".to_owned(),
+			age: 12,
+		},
+	);
+	let jstr = serde_json::to_string(&db).unwrap();
+	assert!(jstr.len() > 0);
+}
 ```
 
 ## `unmarshal`
@@ -144,62 +179,63 @@ pub struct Animal {
 ### `json to struct`
 
 ```rust
-    #[test]
-    #[traced_test]
-    fn struct_from_json() {
-        let jstr = "{\"name\":\"tom\",\"age\":20}";
+#[test]
+#[traced_test]
+fn struct_from_json() {
+	let jstr = "{\"name\":\"tom\",\"age\":20}";
 
-        let cat: Animal = serde_json::from_str(jstr).unwrap();
-        assert_eq!(cat.age, 20);
-    }
+	let cat: Animal = serde_json::from_str(jstr).unwrap();
+	assert_eq!(cat.age, 20);
+}
 ```
+
 ### `json to map`
 
 ```rust
-    #[test]
-    #[traced_test]
-    fn json_to_map() {
-        let jstr = "{\"name\":\"tom\",\"age\":20}";
+#[test]
+#[traced_test]
+fn json_to_map() {
+	let jstr = "{\"name\":\"tom\",\"age\":20}";
 
-        let db: HashMap<String, serde_json::Value> = serde_json::from_str(jstr).unwrap();
+	let db: HashMap<String, serde_json::Value> = serde_json::from_str(jstr).unwrap();
 
-        assert_eq!(db.len(), 2);
-    }
+	assert_eq!(db.len(), 2);
+}
 ```
 
 ### `read json file`
 
 ```rust
-    #[test]
-    #[traced_test]
-    fn map_to_json() {
-        let mut db = HashMap::new();
-        db.insert(
-            "tom",
-            Animal {
-                name: "tom".to_owned(),
-                age: 10,
-            },
-        );
-        db.insert(
-            "jerry",
-            Animal {
-                name: "jerry".to_owned(),
-                age: 12,
-            },
-        );
-        let jstr = serde_json::to_string(&db).unwrap();
-        assert!(jstr.len() > 0);
-    }
+#[test]
+#[traced_test]
+fn map_to_json() {
+	let mut db = HashMap::new();
+	db.insert(
+		"tom",
+		Animal {
+			name: "tom".to_owned(),
+			age: 10,
+		},
+	);
+	db.insert(
+		"jerry",
+		Animal {
+			name: "jerry".to_owned(),
+			age: 12,
+		},
+	);
+	let jstr = serde_json::to_string(&db).unwrap();
+	assert!(jstr.len() > 0);
+}
 ```
 
 # `protobuf`
 
 ## `marshal`
 
-## `thrift`
+## `unmarshal`
 
-# `protobuf`
+# `thrift`
 
 ## `marshal`
 
@@ -216,12 +252,12 @@ cargo add reqwest -F json
 
 ```rust
 pub fn init() -> reqwest::Client {
-    reqwest::Client::builder()
-        .pool_idle_timeout(Duration::from_secs(30))
-        .pool_max_idle_per_host(32)
-        .timeout(Duration::from_secs(1))
-        .build()
-        .unwrap()
+	reqwest::Client::builder()
+		.pool_idle_timeout(Duration::from_secs(30))
+		.pool_max_idle_per_host(32)
+		.timeout(Duration::from_secs(1))
+		.build()
+		.unwrap()
 }
 ```
 
@@ -229,88 +265,125 @@ pub fn init() -> reqwest::Client {
 
 ```rust
 pub fn init() -> reqwest::Client {
-    reqwest::Client::builder()
-        .pool_idle_timeout(Duration::from_secs(30))
-        .pool_max_idle_per_host(32)
-        .timeout(Duration::from_secs(1))
-        .proxy(Proxy::http("http://127.0.0.1:1087").unwrap())
-        .build()
-        .unwrap()
+	reqwest::Client::builder()
+		.pool_idle_timeout(Duration::from_secs(30))
+		.pool_max_idle_per_host(32)
+		.timeout(Duration::from_secs(1))
+		.proxy(Proxy::http("http://127.0.0.1:1087").unwrap())
+		.build()
+		.unwrap()
 }
 ```
 
 ## `超时控制`
 
 ```rust
-    #[tokio::test]
-    #[tracing_test::traced_test]
-    async fn get_with_timeout() {
-        let cli = crate::http_cli::init();
+#[tokio::test]
+#[tracing_test::traced_test]
+async fn get_with_timeout() {
+	let cli = crate::http_cli::init();
 
-        let resp = cli
-            .get("https://www.baidu.com/")
-            .timeout(Duration::from_millis(100))
-            .send()
-            .await;
+	let resp = cli
+		.get("https://www.baidu.com/")
+		.timeout(Duration::from_millis(100))
+		.send()
+		.await;
 
-        match resp {
-            Ok(text) => {
-                assert_eq!(200, text.status());
-                assert!(text.text().await.unwrap().len() > 0);
-            }
-            Err(err) => {
-                error!("fetch error. {}", err);
-            }
-        }
-    }
+	match resp {
+		Ok(text) => {
+			assert_eq!(200, text.status());
+			assert!(text.text().await.unwrap().len() > 0);
+		}
+		Err(err) => {
+			error!("fetch error. {}", err);
+		}
+	}
+}
 ```
 
 ## `post`
 
 ```rust
-    #[tokio::test]
-    #[tracing_test::traced_test]
-    async fn test_post() {
-        let cli = crate::http_cli::init();
+#[tokio::test]
+#[tracing_test::traced_test]
+async fn test_post() {
+	let cli = crate::http_cli::init();
 
-        let resp = cli
-            .post("https://www.baidu.com/")
-            .body("hello world")
-            .send()
-            .await;
+	let resp = cli
+		.post("https://www.baidu.com/")
+		.body("hello world")
+		.send()
+		.await;
 
-        match resp {
-            Ok(text) => {
-                info!("status {:?}", text.status());
-            }
-            Err(err) => {
-                error!("fetch error. {}", err);
-            }
-        }
-    }
+	match resp {
+		Ok(text) => {
+			info!("status {:?}", text.status());
+		}
+		Err(err) => {
+			error!("fetch error. {}", err);
+		}
+	}
+}
 ```
 
-## 下载文件 
+## 下载文件
 
 ```rust
-    #[tokio::test]
-    #[tracing_test::traced_test]
-    async fn download() {
-        let url =
-            "https://inews.gtimg.com/om_bt/O5iwc3sJjyyn6slOb0XefgSSsoJZ5HBFbiPq8I4pdEpKsAA/1000";
-        let cli = crate::http_cli::init();
-        let response = cli.get(url).send().await.unwrap();
-        let mut file = File::create("image.png").unwrap();
-        let mut content = Cursor::new(response.bytes().await.unwrap());
-        std::io::copy(&mut content, &mut file).unwrap();
-    }
+#[tokio::test]
+#[tracing_test::traced_test]
+async fn download() {
+	let url =
+		"https://inews.gtimg.com/om_bt/O5iwc3sJjyyn6slOb0XefgSSsoJZ5HBFbiPq8I4pdEpKsAA/1000";
+	let cli = crate::http_cli::init();
+	let response = cli.get(url).send().await.unwrap();
+	let mut file = File::create("image.png").unwrap();
+	let mut content = Cursor::new(response.bytes().await.unwrap());
+	std::io::copy(&mut content, &mut file).unwrap();
+}
 ```
 
-# `http server`
+# 常用数据结构
 
-## `axum`
+## `Vec`
 
-# 宏 
+## `Map`
+
+### `HashMap`
+
+### `BTreeMap`
+
+## `Set`
+
+### `HashSet`
+
+### `BTreeSet`
+
+## `BinaryHeap`
+
+## `VecDeque`
+
+## `LinkedList`
+# 字符串
+
+# 泛型
+
+## `GAT`
+
+# `trait`
+
+# 错误处理
+
+## 自定义错误
+
+## 错误转换 
+
+# 异步 
+
+# 智能指针 
+
+# 内部可变性 
+
+# 宏
 
 ## 声明式宏 `declarative macros`
 
@@ -321,3 +394,34 @@ pub fn init() -> reqwest::Client {
 ### 类属性宏(`Attribute-like macro`)
 
 ### 类函数宏(`Function-like macro`)
+
+# 闭包 
+
+## `Fn(&self)`
+
+## `FnMut(&mut self)`
+
+## `FnOnce(self)`
+
+# 迭代器 `Iterator`
+
+# 类型转换 
+
+## `as`
+
+## `from`
+
+## `into`
+
+## `Deref`
+
+# `lifetime`
+
+# 析构 
+
+# `pin && unpin`
+
+# 反射 
+
+# `unsafe`
+
