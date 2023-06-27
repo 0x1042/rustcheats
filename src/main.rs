@@ -3,6 +3,7 @@ use tracing::info;
 mod http_cli;
 mod json;
 mod timer_job;
+mod traits;
 
 #[tokio::main]
 async fn main() {
