@@ -2,68 +2,71 @@
 
 - [rustcheats](#rustcheats)
 - [全局变量](#全局变量)
-  - [`lazy static`](#lazy-static)
-  - [`once cell`](#once-cell)
+	- [`lazy static`](#lazy-static)
+	- [`once cell`](#once-cell)
 - [定时任务](#定时任务)
-  - [标准库](#标准库)
-  - [`tokio`](#tokio)
+	- [标准库](#标准库)
+	- [`tokio`](#tokio)
 - [`json`](#json)
-  - [`marshal`](#marshal)
-    - [`struct to json`](#struct-to-json)
-    - [`map to json`](#map-to-json)
-  - [`unmarshal`](#unmarshal)
-    - [`json to struct`](#json-to-struct)
-    - [`json to map`](#json-to-map)
-    - [`read json file`](#read-json-file)
+	- [`marshal`](#marshal)
+		- [`struct to json`](#struct-to-json)
+		- [`map to json`](#map-to-json)
+	- [`unmarshal`](#unmarshal)
+		- [`json to struct`](#json-to-struct)
+		- [`json to map`](#json-to-map)
+		- [`read json file`](#read-json-file)
 - [`protobuf`](#protobuf)
-  - [`marshal`](#marshal-1)
-  - [`unmarshal`](#unmarshal-1)
+	- [`marshal`](#marshal-1)
+	- [`unmarshal`](#unmarshal-1)
 - [`thrift`](#thrift)
-  - [`marshal`](#marshal-2)
-  - [`unmarshal`](#unmarshal-2)
+	- [`marshal`](#marshal-2)
+	- [`unmarshal`](#unmarshal-2)
 - [`http client`](#http-client)
-  - [`长连接`](#长连接)
-  - [`proxy`](#proxy)
-  - [`超时控制`](#超时控制)
-  - [`post`](#post)
-  - [下载文件](#下载文件)
+	- [`长连接`](#长连接)
+	- [`proxy`](#proxy)
+	- [`超时控制`](#超时控制)
+	- [`post`](#post)
+	- [下载文件](#下载文件)
 - [常用数据结构](#常用数据结构)
-  - [`Vec`](#vec)
-  - [`Map`](#map)
-    - [`HashMap`](#hashmap)
-    - [`BTreeMap`](#btreemap)
-  - [`Set`](#set)
-    - [`HashSet`](#hashset)
-    - [`BTreeSet`](#btreeset)
-  - [`BinaryHeap`](#binaryheap)
-  - [`VecDeque`](#vecdeque)
-  - [`LinkedList`](#linkedlist)
+	- [`Vec`](#vec)
+	- [`Map`](#map)
+		- [`HashMap`](#hashmap)
+		- [`BTreeMap`](#btreemap)
+	- [`Set`](#set)
+		- [`HashSet`](#hashset)
+		- [`BTreeSet`](#btreeset)
+	- [`BinaryHeap`](#binaryheap)
+	- [`VecDeque`](#vecdeque)
+	- [`LinkedList`](#linkedlist)
 - [字符串](#字符串)
 - [泛型](#泛型)
-  - [`GAT`](#gat)
+	- [`GAT`](#gat)
 - [`trait`](#trait)
+	- [标准库常见`trait`](#标准库常见trait)
+	- [自定义`trait`](#自定义trait)
+	- [`async_trait`](#async_trait)
 - [错误处理](#错误处理)
-  - [自定义错误](#自定义错误)
-  - [错误转换](#错误转换)
+	- [`thiserror` 定义错误](#thiserror-定义错误)
+	- [`anyhow` 作为函数返回](#anyhow-作为函数返回)
 - [异步](#异步)
 - [智能指针](#智能指针)
 - [内部可变性](#内部可变性)
 - [宏](#宏)
-  - [声明式宏 `declarative macros`](#声明式宏-declarative-macros)
-  - [过程宏 `procedural macros`](#过程宏-procedural-macros)
-    - [派生宏 `#[derive]`](#派生宏-derive)
-    - [类属性宏(`Attribute-like macro`)](#类属性宏attribute-like-macro)
-    - [类函数宏(`Function-like macro`)](#类函数宏function-like-macro)
+	- [声明式宏 `declarative macros`](#声明式宏-declarative-macros)
+	- [过程宏 `procedural macros`](#过程宏-procedural-macros)
+		- [派生宏 `#[derive]`](#派生宏-derive)
+		- [类属性宏(`Attribute-like macro`)](#类属性宏attribute-like-macro)
+		- [类函数宏(`Function-like macro`)](#类函数宏function-like-macro)
 - [闭包](#闭包)
-  - [`Fn(&self)`](#fnself)
-  - [`FnMut(&mut self)`](#fnmutmut-self)
-  - [`FnOnce(self)`](#fnonceself)
+	- [`Fn(&self)`](#fnself)
+	- [`FnMut(&mut self)`](#fnmutmut-self)
+	- [`FnOnce(self)`](#fnonceself)
 - [迭代器 `Iterator`](#迭代器-iterator)
 - [类型转换](#类型转换)
-  - [`as`](#as)
-  - [`from`](#from)
-  - [`into`](#into)
-  - [`Deref`](#deref)
+	- [`as`](#as)
+	- [`from`](#from)
+	- [`into`](#into)
+	- [`Deref`](#deref)
 - [`lifetime`](#lifetime)
 - [析构](#析构)
 - [`pin && unpin`](#pin--unpin)
@@ -371,11 +374,83 @@ async fn download() {
 
 # `trait`
 
+## 标准库常见`trait`
+
+## 自定义`trait`
+
+## `async_trait`
+
 # 错误处理
 
-## 自定义错误
+- `lib`中一般使用`thiserror` 定义错误 
+- `bin`中使用`anyhow`
 
-## 错误转换 
+## `thiserror` 定义错误 
+
+```rust
+#[derive(thiserror::Error, Debug)]
+pub enum RpcError {
+    #[error("input is invalid")]
+    InvalidArgs,
+
+    #[error("rpc timeout with {0:?}")]
+    Timeout(Duration),
+
+    #[error("request from {0} is not allowed")]
+    AclError(String),
+
+    #[error("load balance fail")]
+    LoadbalanceError,
+
+    #[error("system error: {0:?}")]
+    SysError(#[from] std::io::Error),
+
+    #[error("business error:{0}")]
+    BizError(u32),
+
+    #[error("unknown error:{0}")]
+    UnknownError(String),
+}
+```
+
+## `anyhow` 作为函数返回
+
+```rust
+pub fn mock_one_way_rpc(mock_arg: i32) -> anyhow::Result<(), RpcError> {
+    if mock_arg < 0 || mock_arg > 5 {
+        return Ok(());
+    }
+
+    if mock_arg == 0 {
+        return Err(InvalidArgs);
+    }
+
+    if mock_arg == 1 {
+        return Err(Timeout(Duration::seconds(1)));
+    }
+
+    if mock_arg == 2 {
+        return Err(AclError("unknown".to_owned()));
+    }
+
+    if mock_arg == 3 {
+        return Err(RpcError::SysError(Error::new(
+            ErrorKind::ConnectionAborted,
+            "connect aborted",
+        )));
+    }
+
+    if mock_arg == 4 {
+        return Err(BizError(1024));
+    }
+
+    if mock_arg == 5 {
+        return Err(UnknownError("system error".to_string()));
+    }
+
+    Ok(())
+}
+```
 
 # 异步 
 

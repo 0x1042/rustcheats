@@ -1,5 +1,6 @@
 use tracing::info;
 
+mod exception;
 mod http_cli;
 mod json;
 mod timer_job;
