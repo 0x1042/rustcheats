@@ -56,3 +56,16 @@ pub async fn get(key: &str) -> String {
     let db = CACHE.load();
     db.get(key).cloned().unwrap_or_default()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[traced_test]
+    async fn test_timer_job() {
+        tokio::join!(super::init());
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        info!("get key {}", get("status").await);
+    }
+}
