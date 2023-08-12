@@ -1,6 +1,6 @@
+use std::{ops::Add, time::Duration};
+
 use futures_util::SinkExt;
-use std::ops::Add;
-use std::time::Duration;
 use tracing::{error, info};
 
 async fn get<T>(url: T) -> anyhow::Result<String>
@@ -47,16 +47,13 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use std::time::Duration;
-
     #[tokio::test]
     #[tracing_test::traced_test]
     async fn test_timeout() {
         let url = "https://www.toutiao.com";
 
-        let timeout = Duration::from_millis(10000);
+        let timeout = std::time::Duration::from_millis(10000);
 
-        let _ = get_with_timeout(url, timeout).await;
+        let _ = super::get_with_timeout(url, timeout).await;
     }
 }

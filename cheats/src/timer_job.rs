@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 
-use crate::http_cli;
-
 use arc_swap::ArcSwap;
 use tracing::info;
 
+use crate::http_cli;
+
 lazy_static::lazy_static! {
     static ref CLIENT: reqwest::Client = http_cli::init();
-
     static ref CACHE: ArcSwap<HashMap<String,String>> = ArcSwap::from_pointee(HashMap::new());
 }
 
@@ -59,13 +58,12 @@ pub async fn get(key: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[tokio::test]
-    #[traced_test]
+    #[tracing_test::traced_test]
     async fn test_timer_job() {
         tokio::join!(super::init());
         std::thread::sleep(std::time::Duration::from_secs(1));
-        info!("get key {}", get("status").await);
+        tracing::info!("get key {}", super::get("status").await);
     }
 }
