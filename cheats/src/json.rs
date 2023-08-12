@@ -10,9 +10,10 @@ pub struct Animal {
 mod tests {
     use std::collections::HashMap;
 
-    use crate::json::Animal;
     use tracing::info;
     use tracing_test::traced_test;
+
+    use crate::json::Animal;
 
     #[traced_test]
     #[test]
@@ -38,7 +39,8 @@ mod tests {
     #[traced_test]
     fn read_json_file() {
         let dir = std::env::current_dir().unwrap();
-        let file = dir.join("testdata").join("animals.json");
+        info!("=================current dir {:?} ==================", &dir);
+        let file = dir.join("../testdata/animals.json");
         info!(" cur file {:?}", &file);
         let arr_str = std::fs::read_to_string(file).unwrap();
         let animals: Vec<Animal> = serde_json::from_str(&arr_str).unwrap();

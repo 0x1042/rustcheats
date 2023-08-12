@@ -1,6 +1,8 @@
-use crate::exception::RpcError::{AclError, BizError, InvalidArgs, Timeout, UnknownError};
 use std::io::{Error, ErrorKind};
+
 use time::Duration;
+
+use crate::exception::RpcError::{AclError, BizError, InvalidArgs, Timeout, UnknownError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum RpcError {
@@ -17,7 +19,7 @@ pub enum RpcError {
     LoadbalanceError,
 
     #[error("system error: {0:?}")]
-    SysError(#[from] std::io::Error),
+    SysError(#[from] Error),
 
     #[error("business error:{0}")]
     BizError(u32),

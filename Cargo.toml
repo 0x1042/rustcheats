@@ -1,11 +1,15 @@
-[package]
-name = "rustcheats"
+[workspace]
+members = ["cheats"]
+resolver = "2"
+
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
+[workspace.dependencies]
 anyhow = "1"
 arc-swap = "1"
 async-trait = "0.1"
@@ -24,9 +28,20 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1"
 thiserror = "1"
 time = "0.3"
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1.30", features = ["full"] }
 tokio-stream = "0.1"
 tracing = "0.1"
-tracing-appender = "0.2.2"
+tracing-appender = "0.2"
 tracing-subscriber = "0.3"
 tracing-test = "0.2"
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'unwind'
+incremental = false
+overflow-checks = false
