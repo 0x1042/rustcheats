@@ -10,6 +10,8 @@ async fn main() -> anyhow::Result<()> {
     if std::env::var("RUST_LOG").is_err() {
         std::env::set_var("RUST_LOG", "DEBUG");
     }
+    tracing_subscriber::fmt::init();
+
     tokio::join!(timer_job::init(),);
     Ok(())
 }
