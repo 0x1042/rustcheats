@@ -14,6 +14,8 @@ pub fn init() -> reqwest::Client {
 
 #[cfg(test)]
 mod tests {
+    use reqwest::{Error, Response};
+    use tracing::error;
 
     #[tokio::test]
     #[tracing_test::traced_test]
@@ -60,10 +62,18 @@ mod tests {
         let url =
             "https://inews.gtimg.com/om_bt/O5iwc3sJjyyn6slOb0XefgSSsoJZ5HBFbiPq8I4pdEpKsAA/1000";
         let cli = crate::http_cli::init();
-        let response = cli.get(url).send().await.unwrap();
-        let mut file = std::fs::File::create("image.png").unwrap();
-        let mut content = std::io::Cursor::new(response.bytes().await.unwrap());
-        std::io::copy(&mut content, &mut file).unwrap();
+        let response = cli.get(url).send().await;
+
+        match response {
+            Ok(rsp) => {
+                let mut file = std::fs::File::create("image.png").unwrap();
+                let mut content = std::io::Cursor::new(rsp.bytes().await.unwrap());
+                std::io::copy(&mut content, &mut file).unwrap();
+            }
+            Err(err) => {
+                error!("error: {}", err);
+            }
+        }
     }
 
     #[tokio::test]
