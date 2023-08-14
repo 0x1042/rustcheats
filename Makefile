@@ -16,5 +16,11 @@ run: build
 run_axum: build_axum
 	./target/debug/server
 
+run_server: build_server
+	./target/debug/socks
+
+build_server: fmt
+	cargo build -p socks5
+
 gen_entity:
 	sea-orm-cli generate entity -v -o axumex/src/entity --with-serde both
