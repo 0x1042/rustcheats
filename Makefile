@@ -24,3 +24,9 @@ build_server: fmt
 
 gen_entity:
 	sea-orm-cli generate entity -v -o axumex/src/entity --with-serde both
+
+build_fs: fmt
+	cargo build -p fullstack
+
+run_fs: build_fs
+	./target/debug/fullstack

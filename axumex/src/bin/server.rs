@@ -1,8 +1,12 @@
 use std::{env, net::SocketAddr};
 
 use axum::{routing::get, Router, Server};
-use axumex::{infra, router::todo::todorouter};
+use axumex::{
+    infra,
+    router::{sse::sse, todo::todorouter},
+};
 use infra::signal::shutdown_signal;
+use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
 #[tokio::main]
@@ -12,12 +16,16 @@ async fn main() -> anyhow::Result<()> {
     }
     tracing_subscriber::fmt::init();
 
+    let cors = CorsLayer::new().allow_origin(Any);
+
     let app = Router::new()
         .route(
             "/",
             get(|| async { format!("welcome, now is {}", chrono::Local::now()) }),
         )
-        .nest("/todo", todorouter().await);
+        .nest("/todo", todorouter().await)
+        .nest("/sse", sse().await)
+        .layer(cors);
 
     let addr = "0.0.0.0:3000".parse::<SocketAddr>().unwrap();
 

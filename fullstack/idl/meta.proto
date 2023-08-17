@@ -1,0 +1,26 @@
+syntax = "proto3";
+package meta;
+
+message Meta {Dag dag = 1;
+	Ack ack = 2;
+	Bfs bfs = 3;
+}
+
+message Dag {
+	string predict = 1;
+	string rough_sort = 2;
+	string ack = 3;
+	string query = 4;
+}
+
+message Ack {
+	string databus = 1;
+	bool enable_abase = 2;
+}
+
+message Bfs {
+	string bfs_id = 1;
+	bool enable_fe = 2;
+}
+
+message IdentityMeta {map<string, Meta> metas = 1;}
