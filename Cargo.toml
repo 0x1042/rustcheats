@@ -1,5 +1,5 @@
 [workspace]
-members = ["cheats", "axumex", "socks5"]
+members = ["cheats", "axumex", "socks5", "fullstack"]
 resolver = "2"
 
 
@@ -11,7 +11,7 @@ edition = "2021"
 
 [workspace.dependencies]
 anyhow = "1"
-axum = "0.6"
+axum = { version = "0.6", features = ["headers"] }
 arc-swap = "1"
 async-trait = "0.1"
 bytes = "1"
@@ -23,7 +23,9 @@ futures = "0.3"
 futures-util = "0.3"
 itoa = "1.0"
 lazy_static = "1.4"
+headers = "0.3"
 prost = "0.11"
+prost-types = "0.11"
 rand = "0.8"
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -48,10 +50,7 @@ tokio-stream = "0.1"
 tracing = "0.1"
 tracing-subscriber = "0.3"
 tracing-test = "0.2"
-uuid = { version = "1.4", features = [
-    "v4",
-    "fast-rng",
-] }
+uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 
 [profile.release]
 opt-level = 3

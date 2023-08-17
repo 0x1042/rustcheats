@@ -1,5 +1,5 @@
 [package]
-name = "axumex"
+name = "fullstack"
 version.workspace = true
 edition.workspace = true
 
@@ -7,8 +7,6 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
-arc-swap.workspace = true
-async-trait.workspace = true
 axum = { workspace = true, features = ["headers"] }
 tokio = { workspace = true, features = ["full"] }
 futures.workspace = true
@@ -21,18 +19,9 @@ serde_json.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 chrono.workspace = true
-sqlx = { workspace = true, features = [
-    "macros",
-    "sqlite",
-    "runtime-tokio-rustls",
-] }
-once_cell.workspace = true
-sea-orm = { workspace = true, features = [
-    "sqlx-sqlite",
-    "runtime-tokio-rustls",
-    "macros",
-] }
-uuid = { workspace = true, features = [
-    "v4",
-    "fast-rng",
-] }
+prost.workspace = true
+prost-types.workspace = true
+
+
+[build-dependencies]
+prost-build = "0.11"
