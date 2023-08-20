@@ -30,3 +30,6 @@ build_fs: fmt
 
 run_fs: build_fs
 	./target/debug/fullstack
+
+clean:
+	cargo clean

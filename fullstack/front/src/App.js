@@ -1,24 +1,24 @@
 import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Layout } from '@douyinfe/semi-ui';
 
 function App() {
+  const { Header, Footer, Sider, Content } = Layout;
+  const commonStyle = {
+    height: 64,
+    lineHeight: '64px',
+    background: 'var(--semi-color-fill-0)'
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout className="components-layout-demo">
+      <Sider style={{ width: '120px', background: 'var(--semi-color-fill-2)' }}>Sider</Sider>
+      <Layout>
+        <Header style={commonStyle}>Header</Header>
+        <Content style={{ height: 300, lineHeight: '300px' }}>Content</Content>
+        <Footer style={commonStyle}>Footer</Footer>
+      </Layout>
+    </Layout>
   );
 }
 

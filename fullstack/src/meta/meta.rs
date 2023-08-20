@@ -44,6 +44,6 @@ pub struct Bfs {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct IdentityMeta {
-    #[prost(map = "string, message", tag = "1")]
-    pub metas: ::std::collections::HashMap<::prost::alloc::string::String, Meta>,
+    #[prost(btree_map = "string, message", tag = "1")]
+    pub metas: ::prost::alloc::collections::BTreeMap<::prost::alloc::string::String, Meta>,
 }
