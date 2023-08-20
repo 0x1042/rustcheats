@@ -24,4 +24,4 @@ prost-types.workspace = true
 
 
 [build-dependencies]
-prost-build = "0.11"
+prost-build = { version = "0.11", features = ["format"] }
