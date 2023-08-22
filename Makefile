@@ -33,3 +33,6 @@ run_fs: build_fs
 
 clean:
 	cargo clean
+
+build_reset: fmt
+	cargo build -p reset
