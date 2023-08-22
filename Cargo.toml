@@ -1,5 +1,5 @@
 [workspace]
-members = ["cheats", "axumex", "socks5", "fullstack"]
+members = ["cheats", "axumex", "socks5", "fullstack","reset"]
 resolver = "2"
 
 
