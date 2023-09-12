@@ -1,9 +1,4 @@
-use std::{
-    env,
-    fs::File,
-    io::Read,
-    path::{Path, PathBuf},
-};
+use std::{env, path::Path};
 
 use clap::Parser;
 use tracing::info;

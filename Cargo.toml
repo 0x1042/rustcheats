@@ -1,7 +1,6 @@
 [workspace]
-members = ["cheats", "axumex", "socks5", "fullstack","reset"]
+members = ["cheats", "axumex", "socks5", "fullstack", "reset", "dag"]
 resolver = "2"
-
 
 [workspace.package]
 version = "0.1.0"
@@ -14,7 +13,7 @@ anyhow = "1"
 axum = { version = "0.6", features = ["headers"] }
 arc-swap = "1"
 async-trait = "0.1"
-bytes = "1"
+bytes = "1.5"
 chrono = "0.4"
 clap = { version = "4", features = ["derive"] }
 crossbeam = "0.8"
@@ -24,8 +23,8 @@ futures-util = "0.3"
 itoa = "1.0"
 lazy_static = "1.4"
 headers = "0.3"
-prost = "0.11"
-prost-types = "0.11"
+prost = "0.12"
+prost-types = "0.12"
 rand = "0.8"
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -51,6 +50,7 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 tracing-test = "0.2"
 uuid = { version = "1.4", features = ["v4", "fast-rng"] }
+proc-macro2 = "1.0.66"
 
 [profile.release]
 opt-level = 3
