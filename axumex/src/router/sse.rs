@@ -11,7 +11,7 @@ use axum::{
     Router,
 };
 use futures::stream::{self, Stream};
-use tokio::sync::{broadcast, broadcast::error::SendError};
+use tokio::sync::{broadcast, broadcast::error::SendError, mpsc};
 use tokio_stream::StreamExt as _;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::trace;
@@ -23,7 +23,7 @@ pub async fn sse() -> Router {
 
     let static_files_service = ServeDir::new(assets_dir).append_index_html_on_directories(true);
 
-    let (tx, mut rx) = broadcast::channel(16);
+    let (tx, mut rx) = mpsc::channel(16);
 
     let sstate = ServerState { event_stream: tx };
     Router::new()

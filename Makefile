@@ -36,3 +36,7 @@ clean:
 
 build_reset: fmt
 	cargo build -p reset
+
+
+build_dag: fmt
+	cargo build -p dag
