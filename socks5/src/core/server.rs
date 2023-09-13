@@ -18,6 +18,10 @@ pub async fn start(addr: &SocketAddr, timeout: Duration) -> anyhow::Result<()> {
     while let Ok((stream, addr)) = lsn.accept().await {
         info!("receive request from {}", addr);
         tokio::spawn(async move {
+            trace!(
+                "std::thread::current().id() -> {:?}",
+                std::thread::current().id()
+            );
             if let Err(err) = handle(stream, timeout).await {
                 error!("error: {}", err);
             }
