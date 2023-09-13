@@ -11,19 +11,19 @@ use axum::{
     Router,
 };
 use futures::stream::{self, Stream};
-use tokio::sync::{broadcast, broadcast::error::SendError, mpsc};
+use tokio::sync::broadcast;
 use tokio_stream::StreamExt as _;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::trace;
 
-use crate::infra::{AppState, ServerState};
+use crate::infra::ServerState;
 
 pub async fn sse() -> Router {
     let assets_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets");
 
     let static_files_service = ServeDir::new(assets_dir).append_index_html_on_directories(true);
 
-    let (tx, mut rx) = mpsc::channel(16);
+    let (tx, _rx) = broadcast::channel(16);
 
     let sstate = ServerState { event_stream: tx };
     Router::new()

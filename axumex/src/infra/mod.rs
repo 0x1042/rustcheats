@@ -10,5 +10,5 @@ pub struct AppState {
 
 #[derive(Clone)]
 pub struct ServerState {
-    pub event_stream: tokio::sync::mpsc::Sender<String>,
+    pub event_stream: tokio::sync::broadcast::Sender<String>,
 }
