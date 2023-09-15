@@ -67,8 +67,17 @@ mod tests {
         match response {
             Ok(rsp) => {
                 let mut file = std::fs::File::create("image.png").unwrap();
-                let mut content = std::io::Cursor::new(rsp.bytes().await.unwrap());
-                std::io::copy(&mut content, &mut file).unwrap();
+                match rsp.bytes().await {
+                    Ok(body) => {
+                        let mut content = std::io::Cursor::new(body);
+                        if std::io::copy(&mut content, &mut file).is_err() {
+                            error!("copy fail");
+                        }
+                    }
+                    Err(err) => {
+                        error!("err {:?}", err);
+                    }
+                };
             }
             Err(err) => {
                 error!("error: {}", err);
