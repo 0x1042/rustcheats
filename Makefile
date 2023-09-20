@@ -40,3 +40,6 @@ build_reset: fmt
 
 build_dag: fmt
 	cargo build -p dag
+
+build_sv2: fmt
+	cargo build -p socks5v2
