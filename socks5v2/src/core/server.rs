@@ -1,5 +1,4 @@
 use std::{
-    future::Future,
     io,
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6},
     sync::Arc,
@@ -13,13 +12,16 @@ use tokio::{
     io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt},
     net::{lookup_host, TcpListener, TcpStream, ToSocketAddrs},
 };
-use tracing::{error, info, trace};
+use tracing::{debug, error, info, trace};
 
 use super::{
     auth::Config,
-    relay::{consts, Atype, TargetAddr},
+    types::{consts, Atype, AuthMod},
 };
-use crate::core::relay::{relay, tcp_connect_with_timeout};
+use crate::core::{
+    relay::{relay, tcp_connect_with_timeout},
+    types::SocksError,
+};
 
 pub struct Server {
     pub listener: TcpListener,
@@ -54,7 +56,11 @@ impl Server {
         while let Some(conn_res) = income.next().await {
             match conn_res {
                 Ok(conn) => {
-                    spawn(conn.run());
+                    tokio::spawn(async move {
+                        if let Err(e) = conn.run().await {
+                            error!("spawn error: {:#}", &e);
+                        }
+                    });
                 }
                 Err(err) => {
                     error!("exception:{:?}", err);
@@ -64,30 +70,23 @@ impl Server {
     }
 }
 
-fn spawn<F, T>(fut: F) -> tokio::task::JoinHandle<()>
-where
-    F: Future<Output = anyhow::Result<TcpSession<T>>> + Send + 'static,
-    T: AsyncRead + AsyncWrite + Unpin,
-{
-    tokio::spawn(async move {
-        if let Err(e) = fut.await {
-            error!("spawn error: {:#}", &e);
-        }
-    })
-}
-
 pub struct TcpSession<T: AsyncRead + AsyncWrite + Unpin> {
     inner: T,
     config: Arc<Config>,
-    target_addr: Option<TargetAddr>,
+    authmod: AuthMod,
 }
 
 impl<T: AsyncRead + AsyncWrite + Unpin> TcpSession<T> {
     pub fn new(socket: T, config: Arc<Config>) -> Self {
+        let mut authmod = AuthMod::AuthNone;
+
+        if !config.auth_db.is_empty() {
+            authmod = AuthMod::Password;
+        }
         TcpSession {
             inner: socket,
             config,
-            target_addr: None,
+            authmod,
         }
     }
 
@@ -108,7 +107,7 @@ impl<T: AsyncRead + AsyncWrite + Unpin> TcpSession<T> {
             .map(|_| buf)
             .context("read method error")?;
 
-        info!("auth. {ver}, {mlen}");
+        debug!("auth. {ver}, {mlen}");
         let mut buf = vec![0u8; mlen as usize];
 
         let mthds = self
@@ -118,14 +117,57 @@ impl<T: AsyncRead + AsyncWrite + Unpin> TcpSession<T> {
             .map(|_| buf)
             .context("read method error")?;
 
-        info!("mthds:{:?}", mthds);
+        debug!("mthds:{:?}", mthds);
+
+        let reply = match self.authmod {
+            AuthMod::AuthNone => consts::AUTH_SUCCESS,
+            AuthMod::Password => {
+                if !mthds.contains(&consts::AUTH_METHOD_PASSWORD) {
+                    consts::AUTH_METHOD_NOT_ACCEPTABLE
+                } else {
+                    consts::AUTH_METHOD_PASSWORD
+                }
+            }
+        };
+        debug!("auth_reply:{:?}", reply);
 
         self.inner
-            .write(&[consts::VERSION, consts::ZERO])
+            .write(&[consts::VERSION, reply])
             .await
             .context("reply auth failed")?;
 
-        info!("auth success");
+        if reply == consts::AUTH_METHOD_NOT_ACCEPTABLE {
+            return Err(SocksError::UnsupportedAuthMtd.into());
+        }
+
+        if reply != consts::AUTH_METHOD_NONE {
+            // read username
+            let mut buf = [0u8; 2];
+            self.inner.read_exact(&mut buf).await?;
+            let mut name = Vec::with_capacity(buf[1] as usize);
+            self.inner.read_buf(&mut name).await?;
+
+            // read password
+            let passwd_len = self.inner.read_u8().await?;
+            let mut passwd = Vec::with_capacity(passwd_len as usize);
+            self.inner.read_buf(&mut passwd).await?;
+
+            let username = String::from_utf8(name)?;
+            let passwd = String::from_utf8(passwd)?;
+
+            debug!("user:{:?} passwd:{:?}", &username, &passwd);
+            let mut auth_rsp = consts::AUTH_METHOD_NOT_ACCEPTABLE;
+            if let Some(password) = self.config.auth_db.get(username.as_str()) {
+                if passwd.eq(password) {
+                    auth_rsp = consts::AUTH_SUCCESS;
+                }
+            }
+            self.inner.write(&[1, auth_rsp]).await?;
+            debug!("auth success");
+        } else {
+            debug!("no need auth");
+        }
+
         Ok(())
     }
 
