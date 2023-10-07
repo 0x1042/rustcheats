@@ -275,6 +275,7 @@ dependencies = [
  "chrono",
  "futures",
  "headers",
+ "lazy_static",
  "once_cell",
  "reqwest",
  "sea-orm",
@@ -1466,6 +1467,22 @@ name = "log"
 version = "0.4.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b06a4cde4c0f271a446782e3eff8de789548ce57dbc8eca9292c27f4a42004b4"
+
+[[package]]
+name = "majora"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-stream",
+ "clap",
+ "futures-core",
+ "futures-util",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "matchers"

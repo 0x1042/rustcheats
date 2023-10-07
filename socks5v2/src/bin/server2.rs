@@ -24,8 +24,10 @@ async fn main() -> anyhow::Result<()> {
     let config = Config::new()
         .enable_dns_resolve()
         .timeout(std::time::Duration::from_secs(1))
+        .auth_file(opt.auth_file.clone())
         .build();
 
+    debug!("config info {:?}", &config);
     let mut server = Server::new(addr).await?;
     server.set_config(config);
     server.serve().await;

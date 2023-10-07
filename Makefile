@@ -2,6 +2,12 @@ fmt:
 	cargo +nightly fmt
 
 build: fmt
+	cargo build
+
+clean:
+	cargo clean
+
+build_cheats: fmt
 	cargo build -p cheats
 
 build_axum: fmt
@@ -31,12 +37,8 @@ build_fs: fmt
 run_fs: build_fs
 	./target/debug/fullstack
 
-clean:
-	cargo clean
-
 build_reset: fmt
 	cargo build -p reset
-
 
 build_dag: fmt
 	cargo build -p dag
