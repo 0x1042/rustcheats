@@ -1,5 +1,5 @@
 [workspace]
-members = ["axumex", "cheats", "dag", "fullstack", "reset", "socks5", "socks5v2"]
+members = ["axumex", "cheats", "dag", "fullstack", "reset", "socks5", "socks5v2", "majora"]
 resolver = "2"
 
 [workspace.package]
@@ -26,7 +26,7 @@ headers = "0.3"
 itoa = "1.0"
 lazy_static = "1.4"
 once_cell = "1.18"
-proc-macro2 = "1.0.66"
+proc-macro2 = "1.0"
 prost = "0.12"
 prost-types = "0.12"
 rand = "0.8"

@@ -1,27 +1,26 @@
 [package]
+edition.workspace = true
 name = "fullstack"
 version.workspace = true
-edition.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anyhow.workspace = true
 axum = { workspace = true, features = ["headers"] }
-tokio = { workspace = true, features = ["full"] }
+chrono.workspace = true
 futures.workspace = true
 headers.workspace = true
-tokio-stream.workspace = true
-tower-http = { workspace = true, features = ["full"] }
+prost-types.workspace = true
+prost.workspace = true
 reqwest = { workspace = true, features = ["json"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
-tracing.workspace = true
+tokio = { workspace = true, features = ["full"] }
+tokio-stream.workspace = true
+tower-http = { workspace = true, features = ["full"] }
 tracing-subscriber.workspace = true
-chrono.workspace = true
-prost.workspace = true
-prost-types.workspace = true
-
+tracing.workspace = true
 
 [build-dependencies]
 prost-build = { version = "0.12", features = ["format"] }

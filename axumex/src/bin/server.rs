@@ -3,7 +3,7 @@ use std::{env, net::SocketAddr};
 use axum::{routing::get, Router, Server};
 use axumex::{
     infra,
-    router::{sse::sse, todo::todorouter},
+    router::{sse::sse, todo::todorouter, weather::weatherrouter},
 };
 use infra::signal::shutdown_signal;
 use tower_http::cors::{Any, CorsLayer};
@@ -25,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .nest("/todo", todorouter().await)
         .nest("/sse", sse().await)
+        .nest("/weather", weatherrouter().await)
         .layer(cors);
 
     let addr = "0.0.0.0:3000".parse::<SocketAddr>().unwrap();
