@@ -1,18 +1,15 @@
 [package]
 edition.workspace = true
-name = "socks5v2"
+name = "actionnote"
 version.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-anyhow.workspace = true
-async-stream.workspace = true
 clap = { workspace = true, features = ["derive"] }
-futures-core.workspace = true
-futures-util.workspace = true
-thiserror.workspace = true
+rand = "0.8"
+regex = "1.10"
+reqwest = { workspace = true, features = ["json"] }
+serde = { workspace = true, features = ["derive"] }
 tokio = { workspace = true, features = ["full"] }
-tokio-stream.workspace = true
-tracing-subscriber.workspace = true
-tracing.workspace = true
+serde_json.workspace = true
