@@ -2,7 +2,7 @@ use std::{convert::Infallible, path::PathBuf, time::Duration};
 
 use async_stream::try_stream;
 use axum::{
-    extract::{Path, State, TypedHeader},
+    extract::{Path, State},
     response::{
         sse::{Event, KeepAlive, Sse},
         Html,
@@ -10,6 +10,7 @@ use axum::{
     routing::get,
     Router,
 };
+use axum_extra::TypedHeader;
 use futures::stream::{self, Stream};
 use tokio::sync::broadcast;
 use tokio_stream::StreamExt as _;
