@@ -1,11 +1,7 @@
 use std::{env, net::SocketAddr};
 
-use axum::{routing::get, Router, Server};
-use axumex::{
-    infra,
-    router::{sse::sse, todo::todorouter, weather::weatherrouter},
-};
-use infra::signal::shutdown_signal;
+use axum::{routing::get, Router};
+use axumex::router::{sse::sse, todo::todorouter, weather::weatherrouter};
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 
@@ -32,10 +28,9 @@ async fn main() -> anyhow::Result<()> {
 
     info!("server listen at {:?}", &addr);
 
-    Server::bind(&addr)
-        .serve(app.into_make_service_with_connect_info::<SocketAddr>())
-        .with_graceful_shutdown(shutdown_signal())
-        .await?;
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+
+    axum::serve(listener, app).await.unwrap();
 
     Ok(())
 }

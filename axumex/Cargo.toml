@@ -10,10 +10,12 @@ anyhow.workspace = true
 arc-swap.workspace = true
 async-stream.workspace = true
 async-trait.workspace = true
-axum = { workspace = true, features = ["headers"] }
+axum = { workspace = true }
+axum-extra = { workspace = true, features = ["typed-header"] }
 chrono.workspace = true
 futures.workspace = true
 headers.workspace = true
+hyper-util.workspace = true
 lazy_static.workspace = true
 once_cell.workspace = true
 reqwest = { workspace = true, features = ["json"] }
