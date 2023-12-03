@@ -1,5 +1,16 @@
 [workspace]
-members = ["actionnote", "axumex", "cheats", "dag", "fullstack", "majora", "reset", "socks5", "socks5v2"]
+members = [
+    "actionnote",
+    "axumex",
+    "cheats",
+    "dag",
+    "fullstack",
+    "majora",
+    "reset",
+    "socks5",
+    "socks5v2",
+    "thumbor",
+]
 resolver = "2"
 
 [workspace.package]
@@ -32,7 +43,7 @@ itoa = "1.0"
 lazy_static = "1.4"
 libc = "0.2"
 metrics = "0.21.1"
-metrics-exporter-prometheus = "0.12.1"
+metrics-exporter-prometheus = "0.12"
 num = "0.4"
 once_cell = "1.18"
 polling = "3.3"
